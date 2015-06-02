@@ -10,6 +10,7 @@ class ILS
     //parameters
     const double alpha, beta, gamma;
     const int MaxIterNum;
+    const double epsilon;
 
     //varialbes
     std::vector<Node> NodeList;

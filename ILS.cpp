@@ -1,11 +1,13 @@
 #include "ILS.h"
 #include "dataInitialise.h"
 #include "initialSolution.h"
+#include "localSearch.h"
+#include <iostream>
 
 using namespace std;
 
 ILS::ILS(std::string FileDirectory):alpha(1), beta(1), gamma(1),
-    MaxIterNum(1000)
+    MaxIterNum(100), epsilon(0.000001)
 {
     Initialisation(FileDirectory);
 }
@@ -51,7 +53,7 @@ void ILS::RunModel()
     InitialModel.GetInitialSolution(CustomerSorted, AllRouteList, SolutionList);
     Solution InitialSolution = SolutionList.front();
     InitialSolution.DisplaySolution();
-
+    RunILS();
 }
 
 
@@ -67,36 +69,52 @@ void ILS::RunILS()
 
     while(StopCriteriaMet(IterNum) == false){
         Solution BestNeighbor = RunLocalSearch(CurrentSolution);
-
-
-
-
-
+        if(CurrentSolution.ObjectiveValue() - BestNeighbor.ObjectiveValue() > epsilon){
+          CurrentSolution = BestNeighbor;
+        }
+        std::cout << "Iteration: " << IterNum << "  Objective:  "
+                  << CurrentSolution.ObjectiveValue() << endl;
+        ++ IterNum;
     }
 
-
-
-
+    CurrentSolution.DisplaySolution();
 }
 
 Solution ILS::RunLocalSearch(Solution CurrentSolution)
 {
     Solution BestNeighbor;
+    vector<Solution> NeighborSolutions;
+    list<Route> TemRouteList;
 
+    LocalSearch LS;
+    LS.swap(CurrentSolution, NeighborSolutions, TemRouteList, alpha, beta, gamma);
+    double MinObjValue = 9999999999999; //initialise with a huge value
+    for(int i=0; i<(int) NeighborSolutions.size(); ++i){
+        if(MinObjValue - NeighborSolutions[i].ObjectiveValue()>epsilon){
+            BestNeighbor = NeighborSolutions[i];
+            MinObjValue = BestNeighbor.ObjectiveValue();
+        }
+    }
 
+    vector<Route*> RouteList = BestNeighbor.RouteList();
+    //get two new generated routes
+    Route RouteOne = *RouteList[RouteList.size()-1];
+    Route RouteTwo = *RouteList[RouteList.size()-2];
+    //insert to the AllRouteList;
+    this->AllRouteList.push_back(RouteOne);
+    this->AllRouteList.push_back(RouteTwo);
+    RouteList.pop_back();
+    RouteList.pop_back();
 
-
-
-
-
-
-
+    list<Route>::iterator it = this->AllRouteList.end();
+    --it;
+    RouteList.push_back(& *it);
+    --it;
+    RouteList.push_back(& *it);
+    BestNeighbor.SetRouteList(RouteList);
 
     return BestNeighbor;
 }
-
-
-
 
 
 bool ILS::StopCriteriaMet(int IterNum)

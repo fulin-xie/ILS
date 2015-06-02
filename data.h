@@ -49,6 +49,7 @@ public:
     Depot(int Id, double x, double y, double demand,double ReadyT,
           double DueT, double ServiceTime, int InternalId)
         :Node(Id,  x, y, demand, ReadyT, DueT, ServiceTime, InternalId){}
+    Depot():Node(){}
 };
 
 class Customer : public Node{
@@ -75,6 +76,8 @@ private:
     double DriveDistance0;
     double TotalLoad0;
     double ObjectiveValue0;
+    Depot DepotStart0;
+    Depot DepotEnd0;
     //the list of id that visited by this route
     std::vector<Node> VisitList0;
     std::vector<Customer> CustomerList0;
@@ -82,7 +85,8 @@ private:
     // calculate the total cost of this path
     void GetTotalLoad();
     void GetDriveDistance();
-    void GetTimeInformation(); // calculate the vehicle arrive time at each customer, service complete time of each customer
+    // calculate the vehicle arrival time, service complete time of each customer
+    void GetTimeInformation();
 public:
     int VehicleId(){return this->VehicleId0;}
     double CapacityViolation(){return this->CapacityViolation0;}
@@ -92,6 +96,8 @@ public:
     double ObjectiveValue(){return this->ObjectiveValue0;}
     double DriveDistance(){return this->DriveDistance0;}
     double TotalLoad(){return this->TotalLoad0;}
+    Depot DepotStart(){return this->DepotStart0;}
+    Depot DepotEnd(){return this->DepotEnd0;}
     std::vector<Customer> CustomerList(){return this->CustomerList0;}
 
     void SetVehicleId(int VehicleId){this->VehicleId0 = VehicleId;}
@@ -104,7 +110,6 @@ public:
 
 class Solution{
 private:
-    int NumOfRoutes0;
     double ObjectiveValue0;
     std::vector<Route*> RouteList0;
     double TotalDriveDistance0;
@@ -114,9 +119,7 @@ private:
 public:
     void SetRouteList(std::vector<Route*> Routes){
         this->RouteList0 = Routes;}
-
     std::vector<Route*> RouteList(){return this->RouteList0;}
-    int NumOfPaths(){return this->NumOfRoutes0;}
     double TotalDriveDistance(){return this->TotalDriveDistance0;}
     double ObjectiveValue(){return this->ObjectiveValue0;}
     double TotalCapacityViolation(){return this->TotalCapacityViolation0;}

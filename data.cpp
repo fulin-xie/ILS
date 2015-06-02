@@ -21,7 +21,8 @@ Node::Node (int Id, double x, double y, double demand,double ReadyT,
 //ROUTE
 Route::Route(Depot DepotStart, Depot DepotEnd, std::vector<Customer> Customers):VehicleId0(0),
     CapacityViolation0(0),DurationViolation0(0), TimeWindowViolation0(0), TimeUsed0(0),
-    DriveDistance0(0),TotalLoad0(0), ObjectiveValue0(0), CustomerList0(Customers){
+    DriveDistance0(0),TotalLoad0(0), ObjectiveValue0(0), DepotStart0(DepotStart),
+    DepotEnd0(DepotEnd),CustomerList0(Customers){
     //generate the visit list, which includes the start and end depot
     std::vector<Node> NodeList;
     NodeList.push_back(DepotStart);
@@ -97,6 +98,12 @@ void Route::GetTimeInformation()
     if(TimeUsed0 > LastNode->DueDate()){
         this->DurationViolation0 = this->TimeUsed0 - LastNode->DueDate();
     }
+}
+
+void Route::GetObjectiveValue(double alpha, double beta, double gamma)
+{
+    this->ObjectiveValue0 = DriveDistance0 + alpha*CapacityViolation0 +
+            beta*DurationViolation0 + gamma*TimeWindowViolation0;
 }
 
 void Route::DisplayInfo()

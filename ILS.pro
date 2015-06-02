@@ -8,11 +8,13 @@ SOURCES += \
     data.cpp \
     ILS.cpp \
     dataInitialise.cpp \
-    initialSolution.cpp
+    initialSolution.cpp \
+    localSearch.cpp
 
 HEADERS += \
     data.h \
     ILS.h \
     dataInitialise.h \
-    initialSolution.h
+    initialSolution.h \
+    localSearch.h
 

@@ -8,7 +8,7 @@ using namespace std;
 
 int main()
 {
-    string FileDirectory = "C:/C++/VRPTW//heuristics/InstancesR104.txt";
+    string FileDirectory = "C:/C++/ILS_Model/ILS/data/InstancesR104.txt";
 
     ILS model(FileDirectory);
     model.RunModel();
