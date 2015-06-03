@@ -9,12 +9,14 @@ SOURCES += \
     ILS.cpp \
     dataInitialise.cpp \
     initialSolution.cpp \
-    localSearch.cpp
+    localSearch.cpp \
+    perturbation.cpp
 
 HEADERS += \
     data.h \
     ILS.h \
     dataInitialise.h \
     initialSolution.h \
-    localSearch.h
+    localSearch.h \
+    perturbation.h
 

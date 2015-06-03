@@ -6,8 +6,8 @@
 
 using namespace std;
 
-ILS::ILS(std::string FileDirectory):alpha(1), beta(1), gamma(1),
-    MaxIterNum(100), epsilon(0.000001)
+ILS::ILS(std::string FileDirectory):alpha(1000), beta(1000), gamma(1000),
+    MaxIterNum(1000), epsilon(0.000001), LocalSearchRule(1)
 {
     Initialisation(FileDirectory);
 }
@@ -23,7 +23,7 @@ ILS::~ILS()
 
 void ILS::Initialisation(std::string FileDirectory)
 {
-    this->VehicleCount = 10;
+    this->VehicleCount = 19;
     DataInitialise DataReader;
     DataReader.ImportNodeData(FileDirectory);
     this->NodeList = DataReader.NodeList();
@@ -56,10 +56,6 @@ void ILS::RunModel()
     RunILS();
 }
 
-
-
-
-
 void ILS::RunILS()
 {
     Solution CurrentSolution = SolutionList[0];
@@ -71,6 +67,10 @@ void ILS::RunILS()
         Solution BestNeighbor = RunLocalSearch(CurrentSolution);
         if(CurrentSolution.ObjectiveValue() - BestNeighbor.ObjectiveValue() > epsilon){
           CurrentSolution = BestNeighbor;
+        }
+        else{
+            ++LocalSearchRule;
+            if(LocalSearchRule > 4){ LocalSearchRule = 1;}
         }
         std::cout << "Iteration: " << IterNum << "  Objective:  "
                   << CurrentSolution.ObjectiveValue() << endl;
@@ -87,7 +87,28 @@ Solution ILS::RunLocalSearch(Solution CurrentSolution)
     list<Route> TemRouteList;
 
     LocalSearch LS;
-    LS.swap(CurrentSolution, NeighborSolutions, TemRouteList, alpha, beta, gamma);
+    switch (LocalSearchRule){
+    case 1: // the relocate operator
+        LS.relocate(CurrentSolution, NeighborSolutions, TemRouteList,
+                    alpha, beta, gamma);
+        break;
+    case 2: // the swap operator
+        LS.swap(CurrentSolution, NeighborSolutions, TemRouteList,
+                alpha, beta, gamma);
+        break;
+    case 3: // the 2_opt operator
+        LS.TwoOptAsterisk(CurrentSolution, NeighborSolutions, TemRouteList,
+                          alpha, beta, gamma);
+        break;
+    case 4: //the cross exchange operator
+        LS.CrossExchange(CurrentSolution, NeighborSolutions, TemRouteList,
+                         alpha, beta, gamma);
+        break;
+    default:
+        cout << "No valid operator identified" <<endl;
+    }
+
+
     double MinObjValue = 9999999999999; //initialise with a huge value
     for(int i=0; i<(int) NeighborSolutions.size(); ++i){
         if(MinObjValue - NeighborSolutions[i].ObjectiveValue()>epsilon){
@@ -115,7 +136,6 @@ Solution ILS::RunLocalSearch(Solution CurrentSolution)
 
     return BestNeighbor;
 }
-
 
 bool ILS::StopCriteriaMet(int IterNum)
 {

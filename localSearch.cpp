@@ -75,10 +75,15 @@ void LocalSearch::relocate(Solution CurrentSolution, vector<Solution>& AllNeighb
                      Solution NewNeighbor(NewRouteList);
                      NewNeighbor.GetObjectiveValue(alpha, beta, gamma);
                      AllNeighbors.push_back(NewNeighbor);
+                     if(CurrentSolution.ObjectiveValue()
+                             -NewNeighbor.ObjectiveValue() > epsilon){
+                         goto TheEnd;
+                     }
                 }
             }
         }
     }
+TheEnd:{}
 }
 
 Route LocalSearch::MinCostInsertion(Route InsertedRoute, Customer InsertedCustomer,

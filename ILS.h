@@ -11,6 +11,7 @@ class ILS
     const double alpha, beta, gamma;
     const int MaxIterNum;
     const double epsilon;
+    int LocalSearchRule;
 
     //varialbes
     std::vector<Node> NodeList;
